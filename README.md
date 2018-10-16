@@ -21,3 +21,10 @@ Created a Mobile Application both iOS/Android along with a Web Application which
 1. You will need Flutter installed in your machine, to run the application. Head on to [Flutter Docs](https://flutter.io/).
 2. If you have Flutter installed, clone the repository, and Open GetPlaced folder in your IDE.
 3. Run the application to install it.
+
+## Installation Instructions for Web Application:
+1. Clone the repository.
+2. Import the SQL File from the root directory to your local host.
+3. Start your XAMPP server.
+4. Type the following link in your webbrowser: 
+    localhost/git web template/signup.html
