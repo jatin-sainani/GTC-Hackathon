@@ -1,44 +1,77 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import '../Projects/UniversityProject.dart';
+import '../Projects/CompanyProject.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-class UniversityProjectModel extends StatefulWidget {
+class ProjectAppliedFor extends StatefulWidget {
   @override
-  _UniversityProjectModelState createState() => new _UniversityProjectModelState();
+  _ProjectAppliedForState createState() => new _ProjectAppliedForState();
 }
 
-class _UniversityProjectModelState extends State<UniversityProjectModel> {
+class _ProjectAppliedForState extends State<ProjectAppliedFor> {
+  List<Map<String, dynamic>> ongoingProjectList = List();
+  CollectionReference collectionReference;
+
+  Future<QuerySnapshot> _getProjectList() async {
+    collectionReference = Firestore.instance.collection('projects');
+    QuerySnapshot snapshot = await collectionReference.getDocuments();
+    return snapshot;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getProjectList().then((querysnapshot){
+      querysnapshot.documents.forEach((docsnapshot){
+        setState(() {
+          ongoingProjectList.add(docsnapshot.data);
+        });
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scrollbar(
-      child: ListView.builder(
-        shrinkWrap: true,
-        itemCount: universityProjects.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ProjectCardWidget(universityProject: universityProjects[index],);
-        },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Ongoing Projects',
+        ),
+        centerTitle: true,
+      ),
+      body: (ongoingProjectList.isNotEmpty)
+          ? Scrollbar(
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: ongoingProjectList.length,
+            itemBuilder: (BuildContext context, int index) {
+              return ProjectCardWidget(
+                  ongoingProject: ongoingProjectList[index]);
+            },
+          ),
+        ) : Padding(
+        padding: EdgeInsets.only(top: 10.0),
+        child: Center(
+            child: Text(
+              'Not Applied to any project / Still Loading',
+              style: TextStyle(fontWeight: FontWeight.w400),
+            ),
+        ),
       ),
     );
   }
 }
 
 class ProjectCardWidget extends StatefulWidget {
+  final Map<String, dynamic> ongoingProject;
+
   @override
   _ProjectCardWidgetState createState() => _ProjectCardWidgetState();
 
-  final UniversityProject universityProject;
-
-  ProjectCardWidget({
-    Key key, this.universityProject
-  }) : super(key: key);
-
+  ProjectCardWidget({Key key, this.ongoingProject}) : super(key: key);
 }
 
-
 class _ProjectCardWidgetState extends State<ProjectCardWidget> {
-
   final _scaffoldKey = new GlobalKey<ScaffoldState>();
 
   void _showModalSheet() {
@@ -60,21 +93,12 @@ class _ProjectCardWidgetState extends State<ProjectCardWidget> {
                             padding: EdgeInsets.only(top: 10.0),
                           ),
                           Text(
-                            widget.universityProject.projectName,
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            widget.ongoingProject['projectName'],
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13.0),
                           ),
                           Padding(padding: EdgeInsets.only(top: 25.0)),
-                          Text(widget.universityProject.longdesc,),
+                          Text(widget.ongoingProject['longDesc']),
                           Padding(padding: EdgeInsets.only(top: 25.0)),
-                          RaisedButton(
-                            elevation: 5.0,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25.0)),
-                            onPressed: () {
-                              //todo: ATEEK
-                            },
-                            child: Text('Join Project'),
-                          )
                         ],
                       ),
                     ),
@@ -97,32 +121,30 @@ class _ProjectCardWidgetState extends State<ProjectCardWidget> {
           padding: EdgeInsets.only(top: 3.0, left: 5.0, right: 5.0),
           child: Container(
             child: GestureDetector(
-              onTap: (){
+              onTap: () {
                 _showModalSheet();
               },
               child: Card(
                 child: Padding(
-                  padding: EdgeInsets.all(15.0),
+                  padding: EdgeInsets.only(left: 5.0, top: 15.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        widget.universityProject.projectName,
+                        widget.ongoingProject['projectName'],
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20.0,
-                            fontStyle: FontStyle.italic
-                        ),
+                            fontStyle: FontStyle.italic),
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 5.0),
                         child: Text(
-                          'by ' + widget.universityProject.mentorName,
+                          'by ' + widget.ongoingProject['companyName'],
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
                               fontWeight: FontWeight.w300,
-                              fontSize: 15.0
-                          ),
+                              fontSize: 15.0),
                         ),
                       ),
                       Padding(
@@ -133,17 +155,16 @@ class _ProjectCardWidgetState extends State<ProjectCardWidget> {
                               Column(
                                 children: <Widget>[
                                   Text(
-                                    widget.universityProject.domainName,
+                                    widget.ongoingProject['domainName'],
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w400,
+                                      fontWeight: FontWeight.bold,
                                       fontSize: 11.0,
                                     ),
                                   ),
                                 ],
                               ),
                             ],
-                          )
-                      ),
+                          )),
                       Padding(
                           padding: EdgeInsets.only(top: 5.0),
                           child: Row(
@@ -151,17 +172,18 @@ class _ProjectCardWidgetState extends State<ProjectCardWidget> {
                             children: <Widget>[
                               Padding(
                                 padding: EdgeInsets.only(left: 80.0),
-                                child: Text(
-                                  widget.universityProject.description,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w400,
-                                    fontSize: 11.0,
+                                child: SingleChildScrollView(
+                                  child: Text(
+                                    widget.ongoingProject['description'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: 11.0,
+                                    ),
                                   ),
                                 ),
                               ),
                             ],
-                          )
-                      )
+                          ))
                     ],
                   ),
                 ),
@@ -173,4 +195,3 @@ class _ProjectCardWidgetState extends State<ProjectCardWidget> {
     );
   }
 }
-
