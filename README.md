@@ -19,5 +19,5 @@ Created a Mobile Application both iOS/Android along with a Web Application which
 
 ## Installation Instructions for Mobile Application:
 1. You will need Flutter installed in your machine, to run the application. Head on to [Flutter Docs](https://flutter.io/).
-2. If you have Flutter installed, clone the repository, and Open GetStarted folder in your IDE.
+2. If you have Flutter installed, clone the repository, and Open GetPlaced folder in your IDE.
 3. Run the application to install it.
