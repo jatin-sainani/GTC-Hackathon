@@ -28,3 +28,8 @@ Created a Mobile Application both iOS/Android along with a Web Application which
 3. Start your XAMPP server.
 4. Type the following link in your webbrowser: 
     localhost/git web template/signup.html
+
+##Completing
+1
+2
+3
